@@ -1,0 +1,1 @@
+Handles all of the buissness logic between the Controller and the Model 

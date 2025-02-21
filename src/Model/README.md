@@ -1,0 +1,1 @@
+Handles all of the data trasnactions between the API and the Database
