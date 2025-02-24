@@ -1,32 +1,43 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
-type album struct {
-	ID     string  `json:"id"`
-	Title  string  `json:"title"`
-	Artist string  `json:"artist"`
-	Price  float64 `json:"price"`
+// Manual Testing Curl Commands
+// curl localhost:8080/jobpostings
+// curl -d '{"id":"123", "companyName":"some_Company2", "positionLink":"www.some_company2.com"}' -H "Content-Type: application/json" -X POST http://localhost:8080/jobpostings
+
+type JobPosting struct {
+	ID                        string  `json:"id,omitempty"`
+	CompanyName               string  `json:"companyName" binding:"required"` // required
+	ReferralName              string  `json:"referralName,omitempty"`
+	ReferralNotes             float64 `json:"referralNotes,omitempty"`
+	ApplicationSubmissionDate string  `json:"applicationSubmissionDate,omitempty"`
+	PositionLink              string  `json:"positionLink" binding:"required"` // required
+	GoogleDocLink             string  `json:"docLink,omitempty"`
+	Interview                 bool    `json:"interview,omitempty"`
+	InterviewDate             string  `json:"interviewDate,omitempty"`
+	Denial                    bool    `json:"denial,omitempty"`
+	AdditionalInfo            string  `json:"additionalInfo,omitempty"`
 }
 
-var albums = []album{
-	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
-	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99},
-	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
+var jobPostings = []JobPosting{
+	{ID: "39cb5563-f85a-43d2-a815-51ced1138b9f", CompanyName: "someCompany", PositionLink: "www.somecompany.com"},
 }
 
-func getAlbums(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, albums)
+func getJobPostings(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, jobPostings)
 }
 
-func getAlbumByID(c *gin.Context) {
+func getJobPostingsByID(c *gin.Context) {
 	id := c.Param("id")
 
-	for _, a := range albums {
+	for _, a := range jobPostings {
 		if a.ID == id {
 			c.IndentedJSON(http.StatusOK, a)
 			return
@@ -35,22 +46,30 @@ func getAlbumByID(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 }
 
-func postAlbums(c *gin.Context) {
-	var newAlbum album
+func postJobPosting(c *gin.Context) {
+	var newJobPosting JobPosting
 
-	if err := c.BindJSON(&newAlbum); err != nil {
+	if err := c.BindJSON(&newJobPosting); err != nil {
+		fmt.Println("Error: ", err)
 		return
 	}
 
-	albums = append(albums, newAlbum)
-	c.IndentedJSON(http.StatusCreated, newAlbum)
+	if newJobPosting.CompanyName == "" || newJobPosting.PositionLink == "" {
+		gin.ErrorLogger()
+		return
+	}
+
+	newJobPosting.ID = uuid.NewString()
+
+	jobPostings = append(jobPostings, newJobPosting)
+	c.IndentedJSON(http.StatusCreated, newJobPosting)
 }
 
 func main() {
 	router := gin.Default()
-	router.GET("/albums", getAlbums)
-	router.GET("/albums/:id", getAlbumByID)
-	router.POST("/albums", postAlbums)
+	router.GET("/jobpostings", getJobPostings)
+	router.GET("/jobpostings/:id", getJobPostingsByID)
+	router.POST("/jobpostings", postJobPosting)
 
 	router.Run("localhost:8080")
 }
