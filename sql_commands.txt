@@ -1,0 +1,16 @@
+File Used to track SQL Commands used on DB
+
+CREATE TABLE job_postings (
+    id varchar(255) NOT NULL UNIQUE,
+    company_name varchar(255) NOT NULL,
+    referral_name varchar(255),
+    referral_notes varchar(255),
+    application_submit_date varchar(255),
+    position_link varchar(255) NOT NULL,
+    goog_doc_link varchar(255),
+    interview BOOL,
+    interview_date varchar(255),
+    denial BOOL,
+    additional_info varchar(255),
+    PRIMARY KEY (ID)
+);

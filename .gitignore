@@ -10,3 +10,6 @@
 .vscode/
 *.swp
 *.DS_Store
+
+# Shh Secrets
+.env

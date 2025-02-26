@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -9,14 +10,14 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetJobPostings(c *gin.Context) {
+func GetJobPostings(c *gin.Context, db *sql.DB) {
 	c.IndentedJSON(http.StatusOK, model.JobPostings)
 }
 
-func GetJobPostingsByID(c *gin.Context) {
+func GetJobPostingsByID(c *gin.Context, db *sql.DB) {
 	id := c.Param("id")
 
-	for _, a := range model.GetJobPostings() {
+	for _, a := range model.GetJobPostings(db) {
 		if a.ID == id {
 			c.IndentedJSON(http.StatusOK, a)
 			return
@@ -25,7 +26,7 @@ func GetJobPostingsByID(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 }
 
-func PostJobPosting(c *gin.Context) {
+func PostJobPosting(c *gin.Context, db *sql.DB) {
 	var newJobPosting model.JobPosting
 
 	if err := c.BindJSON(&newJobPosting); err != nil {
@@ -40,6 +41,6 @@ func PostJobPosting(c *gin.Context) {
 
 	newJobPosting.ID = uuid.NewString()
 
-	model.SetJobPostings(newJobPosting)
+	model.SetJobPostings(newJobPosting, db)
 	c.IndentedJSON(http.StatusCreated, newJobPosting)
 }
