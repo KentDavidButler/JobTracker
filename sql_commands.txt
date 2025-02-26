@@ -15,6 +15,7 @@ CREATE TABLE job_postings (
     PRIMARY KEY (ID)
 );
 
+// https://www.postgresql.org/docs/7.3/ddl-alter.html
 Update table because GOLANG dislikes null vales *sadbutt*
 ALTER TABLE job_postings ALTER COLUMN referral_name SET NOT NULL,
     ALTER COLUMN referral_notes SET NOT NULL,
@@ -46,5 +47,5 @@ VALUES ('26984446-374a-4b76-a875-63ccb82247ac',
 SELECT * FROM job_postings WHERE 
     id='26984446-374a-4b76-a875-63ccb82247ac';
 
-Delete data in job_postings table
+Delete data in job_postings table // https://www.postgresql.org/docs/8.1/sql-delete.html
 DELETE FROM job_postings;
