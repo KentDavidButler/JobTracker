@@ -3,7 +3,7 @@ File Used to track SQL Commands used on DB
 CREATE TABLE job_postings (
     id varchar(255) NOT NULL UNIQUE,
     company_name varchar(255) NOT NULL,
-    referral_name varchar(255),
+    referral_name varchar(255) ,
     referral_notes varchar(255),
     application_submit_date varchar(255),
     position_link varchar(255) NOT NULL,
@@ -14,3 +14,37 @@ CREATE TABLE job_postings (
     additional_info varchar(255),
     PRIMARY KEY (ID)
 );
+
+Update table because GOLANG dislikes null vales *sadbutt*
+ALTER TABLE job_postings ALTER COLUMN referral_name SET NOT NULL,
+    ALTER COLUMN referral_notes SET NOT NULL,
+    ALTER COLUMN application_submit_date SET NOT NULL,
+    ALTER COLUMN goog_doc_link SET NOT NULL,
+    ALTER COLUMN interview SET NOT NULL,
+    ALTER COLUMN interview_date SET NOT NULL,
+    ALTER COLUMN denial SET NOT NULL,
+    ALTER COLUMN additional_info SET NOT NULL
+;
+
+Update Table so columns have default values
+ALTER TABLE job_postings ALTER COLUMN referral_name SET DEFAULT 'not_provided',
+    ALTER COLUMN referral_notes SET DEFAULT 'not_provided',
+    ALTER COLUMN application_submit_date SET DEFAULT 'not_provided',
+    ALTER COLUMN goog_doc_link SET DEFAULT 'not_provided',
+    ALTER COLUMN interview SET DEFAULT FALSE,
+    ALTER COLUMN interview_date SET DEFAULT 'not_provided',
+    ALTER COLUMN denial SET DEFAULT FALSE,
+    ALTER COLUMN additional_info SET DEFAULT 'not_provided'
+;
+
+Test data 
+INSERT INTO job_postings (id,
+    company_name, position_link) 
+VALUES ('26984446-374a-4b76-a875-63ccb82247ac',
+    'some Company', 'www.someCompany.com');
+
+SELECT * FROM job_postings WHERE 
+    id='26984446-374a-4b76-a875-63ccb82247ac';
+
+Delete data in job_postings table
+DELETE FROM job_postings;

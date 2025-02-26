@@ -21,7 +21,7 @@ func main() {
 	// Pull ENV VARS
 	pg_user, pg_pass := pullEvnVarsOrExit()
 
-	db_conn_string := fmt.Sprintf("%s:%s@tcp(127.0.0.1:5432)/postgres", pg_user, pg_pass)
+	db_conn_string := fmt.Sprintf("host=127.0.0.1 port=5432 user=%s password =%s dbname=postgres sslmode=disable", pg_user, pg_pass)
 	db, err := sql.Open("postgres", db_conn_string)
 	if err != nil {
 		panic("DB Open: " + err.Error())

@@ -1,6 +1,11 @@
 package model
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+
+	_ "github.com/lib/pq"
+)
 
 type JobPosting struct {
 	ID                        string `json:"id,omitempty"`
@@ -22,6 +27,22 @@ var JobPostings = []JobPosting{
 
 func GetJobPostings(db *sql.DB) []JobPosting {
 	return JobPostings
+}
+
+func GetJobPostingsByID(db *sql.DB, id string) JobPosting {
+	var job JobPosting
+
+	// this only works because all DB fields map to all JobPosting struct fields
+	// if for any reason they don't match in the future, we'll have to request each column individually
+	// this also works because fields are not able to be null in the DB and have default values.
+	err := db.QueryRow("SELECT * FROM job_postings WHERE id = $1", id).Scan(&job.ID, &job.CompanyName,
+		&job.ReferralName, &job.ReferralNotes, &job.ApplicationSubmissionDate, &job.PositionLink,
+		&job.GoogleDocLink, &job.Interview, &job.InterviewDate, &job.Denial, &job.AdditionalInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return job
 }
 
 func SetJobPostings(posting JobPosting, db *sql.DB) {

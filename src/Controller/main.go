@@ -17,11 +17,10 @@ func GetJobPostings(c *gin.Context, db *sql.DB) {
 func GetJobPostingsByID(c *gin.Context, db *sql.DB) {
 	id := c.Param("id")
 
-	for _, a := range model.GetJobPostings(db) {
-		if a.ID == id {
-			c.IndentedJSON(http.StatusOK, a)
-			return
-		}
+	job := model.GetJobPostingsByID(db, id)
+	if job.ID != "" {
+		c.IndentedJSON(http.StatusOK, job)
+		return
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 }
