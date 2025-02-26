@@ -65,6 +65,19 @@ func GetJobPostingsByID(db *sql.DB, id string) JobPosting {
 	return job
 }
 
-func SetJobPostings(posting JobPosting, db *sql.DB) {
-	JobPostings = append(JobPostings, posting)
+func SetJobPostings(job JobPosting, db *sql.DB) {
+	stmt, err := db.Prepare(`INSERT INTO job_postings(id, company_name, referral_name, referral_notes,
+		application_submit_date, position_link, goog_doc_link, interview, interview_date, denial,
+		 additional_info) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	res, err := stmt.Exec(&job.ID, &job.CompanyName, &job.ReferralName, &job.ReferralNotes,
+		&job.ApplicationSubmissionDate, &job.PositionLink, &job.GoogleDocLink, &job.Interview,
+		&job.InterviewDate, &job.Denial, &job.AdditionalInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("DB Response:  %d\n", res)
 }
