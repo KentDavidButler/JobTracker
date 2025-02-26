@@ -19,9 +19,9 @@ import (
 func main() {
 	fmt.Println("Starting Service")
 	// Pull ENV VARS
-	pg_user, pg_pass := pullEvnVarsOrExit()
+	pg_user, pg_pass, db_name := pullEvnVarsOrExit()
 
-	db_conn_string := fmt.Sprintf("host=127.0.0.1 port=5432 user=%s password =%s dbname=postgres sslmode=disable", pg_user, pg_pass)
+	db_conn_string := fmt.Sprintf("host=127.0.0.1 port=5432 user=%s password =%s dbname=%s sslmode=disable", pg_user, pg_pass, db_name)
 	db, err := sql.Open("postgres", db_conn_string)
 	if err != nil {
 		panic("DB Open: " + err.Error())
@@ -36,7 +36,7 @@ func main() {
 	router.Run("localhost:8080")
 }
 
-func pullEvnVarsOrExit() (string, string) {
+func pullEvnVarsOrExit() (string, string, string) {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Some error occured. Err: %s", err)
@@ -54,6 +54,12 @@ func pullEvnVarsOrExit() (string, string) {
 	} else {
 		panic("pg user password not found")
 	}
+	db_name, present := os.LookupEnv("POSTGRES_DBNAME")
+	if present {
+		fmt.Println("pg db name password found")
+	} else {
+		panic("pg db name password not found")
+	}
 
-	return pg_user, pg_pass
+	return pg_user, pg_pass, db_name
 }
