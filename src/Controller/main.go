@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/KentDavidButler/JobTracker/internal/receiver"
 	model "github.com/KentDavidButler/JobTracker/src/Model"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -35,12 +36,8 @@ func PostJobPosting(c *gin.Context, db *sql.DB) {
 	var newJobPosting model.JobPosting
 
 	if err := c.BindJSON(&newJobPosting); err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		fmt.Println("Error: ", err)
-		return
-	}
-
-	if newJobPosting.CompanyName == "" || newJobPosting.PositionLink == "" {
-		gin.ErrorLogger()
 		return
 	}
 
@@ -48,4 +45,22 @@ func PostJobPosting(c *gin.Context, db *sql.DB) {
 
 	model.SetJobPostings(newJobPosting, db)
 	c.IndentedJSON(http.StatusCreated, newJobPosting)
+}
+
+type Receiver_Input struct {
+	Url string `json:"url" binding:"required"` // required
+}
+
+func Receiver(c *gin.Context) {
+	var url Receiver_Input
+
+	if err := c.BindJSON(&url); err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		fmt.Println("Error: ", err)
+		return
+	}
+
+	receiver.Receiver(url.Url)
+	c.IndentedJSON(http.StatusOK, gin.H{"url_received": url})
+
 }

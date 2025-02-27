@@ -24,3 +24,9 @@ func PostJobPosting(db *sql.DB) gin.HandlerFunc {
 		controller.PostJobPosting(c, db)
 	}
 }
+
+func Receiver() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		controller.Receiver(c)
+	}
+}

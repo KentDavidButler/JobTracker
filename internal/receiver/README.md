@@ -1,0 +1,1 @@
+The codebase where all of the data that is pulled from a website is digested, processed and then spit back as a struct, when working correctly

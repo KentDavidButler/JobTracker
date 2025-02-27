@@ -12,10 +12,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// Manual Testing Curl Commands
-// curl localhost:8080/jobpostings
-// curl -d '{"id":"123", "companyName":"some_Company2", "positionLink":"www.some_company2.com"}' -H "Content-Type: application/json" -X POST http://localhost:8080/jobpostings
-
+// TODO: Standardize output for errors and success
 func main() {
 	fmt.Println("Starting Service")
 	// Pull ENV VARS
@@ -32,6 +29,8 @@ func main() {
 	router.GET("/jobpostings", service.GetJobPostings(db))
 	router.GET("/jobpostings/:id", service.GetJobPostingsByID(db))
 	router.POST("/jobpostings", service.PostJobPosting(db))
+	// Pull Data from Job Posting URL
+	router.POST("/jobpostings/receiver", service.Receiver())
 
 	router.Run("localhost:8080")
 }

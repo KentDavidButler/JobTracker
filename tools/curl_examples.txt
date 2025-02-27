@@ -1,0 +1,13 @@
+// Manual Testing Curl Commands
+
+- Getting stored data
+curl localhost:8080/jobpostings
+
+- Getting a single stored job
+curl localhost:8080/jobpostings/{job_id}
+
+- Posting a new item
+curl -d '{"companyName":"some_Company2", "positionLink":"www.some_company2.com"}' -H "Content-Type: application/json" -X POST http://localhost:8080/jobpostings
+
+- Posting a URL to pull data from
+curl -d '{"url":"www.some_company2.com"}' -H "Content-Type: application/json" -X POST http://localhost:8080/jobpostings/receiver
