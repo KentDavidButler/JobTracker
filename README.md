@@ -13,7 +13,7 @@ Example of getting a specific job:
 `curl localhost:8080/jobpostings/26984446-374a-4b76-a875-63ccb82247ac`
 
 Example of adding a job to the app:
-````
+```
 curl -d '{"id":"123", "companyName":"some_Company2", "positionLink":"www.some_company2.com"}' -H "Content-Type: application/json" -X POST http://localhost:8080/jobpostings
 ```
 
@@ -30,4 +30,4 @@ And of course, a locally running postgres database running with your DB name in 
 
 # Special Considerations
 When working with Go and Postgress I found it is easiest to make sure all DB values are defaulted to something. Allowing Null values from the DB was clunky with a lot of additional checking of the values when pulling and pushing to the DB.
-I'm trying to use the GOLANG standard library for GO 1.24, that said I've been unable to pull env vars using the standard library and had to use `joho/godotenv` since the standard library 
+I'm trying to use the GOLANG standard library for GO 1.24, that said I've been unable to pull env vars using the standard library and had to use `joho/godotenv` since the standard library. Similarly goes with using gin. Gin has been a breeze to get a basic API endpoint up and running, and I honestly can't say enough great things about it.
