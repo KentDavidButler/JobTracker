@@ -152,3 +152,55 @@ func SetConnections(conn Connection, db *sql.DB) {
 
 	log.Printf("DB Response:  %d\n", res)
 }
+
+// Companies
+
+func GetCompanies(db *sql.DB, offset int16) []Company {
+	var companies []Company
+
+	rows, err := db.Query(`SELECT * FROM companies ORDER BY name LIMIT 
+		100 OFFSET $1`, offset)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var comps Company
+		err := rows.Scan(&comps.ID, &comps.Name, &comps.Phone,
+			&comps.Connections, &comps.LinkedInUrl)
+		if err != nil {
+			log.Fatal(err)
+		}
+		companies = append(companies, comps)
+	}
+
+	return companies
+}
+
+func GetCompaniesByID(db *sql.DB, id string) Company {
+	var comp Company
+
+	err := db.QueryRow("SELECT * FROM companies WHERE id = $1", id).Scan(&comp.ID,
+		&comp.Name, &comp.Phone, &comp.Connections, &comp.LinkedInUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return comp
+}
+
+func SetCompanies(comp Company, db *sql.DB) {
+	stmt, err := db.Prepare(`INSERT INTO companies(id, name, phone, connections,
+		linked_in_url) VALUES($1, $2, $3, $4, $5)`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	res, err := stmt.Exec(&comp.ID, &comp.Name, &comp.Phone,
+		&comp.Connections, &comp.LinkedInUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("DB Response:  %d\n", res)
+}

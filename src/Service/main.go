@@ -52,3 +52,23 @@ func PostConnection(db *sql.DB) gin.HandlerFunc {
 		controller.PostConnection(c, db)
 	}
 }
+
+// Companies
+
+func GetCompanies(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		controller.GetCompanies(c, db)
+	}
+}
+
+func GetCompaniesByID(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		controller.GetCompaniesByID(c, db)
+	}
+}
+
+func PostCompanies(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		controller.PostCompanies(c, db)
+	}
+}

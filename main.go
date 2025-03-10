@@ -39,6 +39,11 @@ func main() {
 	router.GET("/connections/:id", service.GetConnectionsByID(db))
 	router.POST("/connetions", service.PostConnection(db))
 
+	// Add Connections/People/Referrers to DB
+	router.GET("/companies", service.GetCompanies(db))
+	router.GET("/companies/:id", service.GetCompaniesByID(db))
+	router.POST("/companies", service.PostCompanies(db))
+
 	router.Run("localhost:8080")
 }
 

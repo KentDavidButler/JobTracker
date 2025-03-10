@@ -104,3 +104,41 @@ func PostConnection(c *gin.Context, db *sql.DB) {
 	model.SetConnections(newConnection, db)
 	c.IndentedJSON(http.StatusCreated, newConnection)
 }
+
+// Companies
+
+func GetCompanies(c *gin.Context, db *sql.DB) {
+	jobs := model.GetCompanies(db, 0)
+
+	if len(jobs) > 0 {
+		c.IndentedJSON(http.StatusOK, jobs)
+		return
+	}
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "list is empty"})
+}
+
+func GetCompaniesByID(c *gin.Context, db *sql.DB) {
+	id := c.Param("id")
+
+	job := model.GetCompaniesByID(db, id)
+	if job.ID != "" {
+		c.IndentedJSON(http.StatusOK, job)
+		return
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "company not found"})
+}
+
+func PostCompanies(c *gin.Context, db *sql.DB) {
+	var newCompany model.Company
+
+	if err := c.BindJSON(&newCompany); err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		fmt.Println("Error: ", err)
+		return
+	}
+
+	newCompany.ID = uuid.NewString()
+
+	model.SetCompanies(newCompany, db)
+	c.IndentedJSON(http.StatusCreated, newCompany)
+}
