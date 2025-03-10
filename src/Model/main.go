@@ -8,22 +8,39 @@ import (
 )
 
 type JobPosting struct {
-	ID                        string `json:"id,omitempty"`
-	CompanyName               string `json:"companyName" binding:"required"` // required
-	ReferralName              string `json:"referralName,omitempty"`
-	ReferralNotes             string `json:"referralNotes,omitempty"`
-	ApplicationSubmissionDate string `json:"applicationSubmissionDate,omitempty"`
-	PositionLink              string `json:"positionLink" binding:"required"` // required
-	GoogleDocLink             string `json:"docLink,omitempty"`
-	Interview                 bool   `json:"interview,omitempty"`
-	InterviewDate             string `json:"interviewDate,omitempty"`
-	Denial                    bool   `json:"denial,omitempty"`
-	AdditionalInfo            string `json:"additionalInfo,omitempty"`
+	ID                        string       `json:"id,omitempty"`
+	CompanyName               string       `json:"companyName" binding:"required"` // required
+	ReferralName              string       `json:"referralName,omitempty"`
+	ReferralNotes             string       `json:"referralNotes,omitempty"`
+	Connections               []Connection `json:"connections,omitempty`
+	ApplicationSubmissionDate string       `json:"applicationSubmissionDate,omitempty"`
+	PositionLink              string       `json:"positionLink" binding:"required"` // required
+	GoogleDocLink             string       `json:"docLink,omitempty"`
+	Interview                 bool         `json:"interview,omitempty"`
+	InterviewDate             string       `json:"interviewDate,omitempty"`
+	Denial                    bool         `json:"denial,omitempty"`
+	AdditionalInfo            string       `json:"additionalInfo,omitempty"`
 }
 
-var JobPostings = []JobPosting{
-	{ID: "39cb5563-f85a-43d2-a815-51ced1138b9f", CompanyName: "someCompany", PositionLink: "www.somecompany.com"},
+type Connection struct {
+	ID          string    `json:"id,omitempty"`
+	FirstName   string    `json:"firstname" binding:"required"` // required
+	LastName    string    `json:"lastname" binding:"required"`  // required
+	Companies   []Company `json:"companies,omitempty"`
+	Phone       string    `json:"phone,omitempty"`
+	Email       string    `json:"email,omitempty"`
+	LinkedInUrl string    `json:"linkedin_url,omitempty"`
 }
+
+type Company struct {
+	ID          string       `json:"id,omitempty"`
+	Name        string       `json:"name" binding:"required"` // required
+	Phone       string       `json:"phone,omitempty"`
+	Connections []Connection `json:"connections,omitempty"`
+	LinkedInUrl string       `json:"linkedin_url,omitempty"`
+}
+
+// Job Postings
 
 func GetJobPostings(db *sql.DB, offset int16) []JobPosting {
 	var postings []JobPosting
@@ -75,6 +92,60 @@ func SetJobPostings(job JobPosting, db *sql.DB) {
 	res, err := stmt.Exec(&job.ID, &job.CompanyName, &job.ReferralName, &job.ReferralNotes,
 		&job.ApplicationSubmissionDate, &job.PositionLink, &job.GoogleDocLink, &job.Interview,
 		&job.InterviewDate, &job.Denial, &job.AdditionalInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("DB Response:  %d\n", res)
+}
+
+// Connections
+
+func GetConnections(db *sql.DB, offset int16) []Connection {
+	var connections []Connection
+
+	rows, err := db.Query(`SELECT * FROM connections ORDER BY name LIMIT 
+		100 OFFSET $1`, offset)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var conn Connection
+		err := rows.Scan(&conn.ID, &conn.FirstName, &conn.LastName,
+			&conn.Companies, &conn.Phone, &conn.Email, &conn.LinkedInUrl)
+		if err != nil {
+			log.Fatal(err)
+		}
+		connections = append(connections, conn)
+	}
+
+	return connections
+}
+
+func GetConnectionsByID(db *sql.DB, id string) Connection {
+	var conn Connection
+
+	err := db.QueryRow("SELECT * FROM connections WHERE id = $1", id).Scan(&conn.ID,
+		&conn.FirstName, &conn.LastName,
+		&conn.Companies, &conn.Phone,
+		&conn.Email, &conn.LinkedInUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return conn
+}
+
+func SetConnections(conn Connection, db *sql.DB) {
+	stmt, err := db.Prepare(`INSERT INTO connections(id, first_name, last_name, companies,
+		phone, email, linked_in_url) VALUES($1, $2, $3, $4, $5, $6, $7)`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	res, err := stmt.Exec(&conn.ID, &conn.FirstName, &conn.LastName,
+		&conn.Companies, &conn.Phone, &conn.Email, &conn.LinkedInUrl)
 	if err != nil {
 		log.Fatal(err)
 	}

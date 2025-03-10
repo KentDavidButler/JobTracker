@@ -6,10 +6,12 @@ import (
 	"net/http"
 
 	"github.com/KentDavidButler/JobTracker/internal/receiver"
-	model "github.com/KentDavidButler/JobTracker/src/Model"
+	model "github.com/KentDavidButler/JobTracker/src/model"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
+
+// Job Postings
 
 func GetJobPostings(c *gin.Context, db *sql.DB) {
 	jobs := model.GetJobPostings(db, 0)
@@ -63,4 +65,42 @@ func Receiver(c *gin.Context) {
 	receiver.Receiver(url.Url)
 	c.IndentedJSON(http.StatusOK, gin.H{"url_received": url})
 
+}
+
+// Connections
+
+func GetConnections(c *gin.Context, db *sql.DB) {
+	jobs := model.GetConnections(db, 0)
+
+	if len(jobs) > 0 {
+		c.IndentedJSON(http.StatusOK, jobs)
+		return
+	}
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "list is empty"})
+}
+
+func GetConnectionsByID(c *gin.Context, db *sql.DB) {
+	id := c.Param("id")
+
+	job := model.GetConnectionsByID(db, id)
+	if job.ID != "" {
+		c.IndentedJSON(http.StatusOK, job)
+		return
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "job not found"})
+}
+
+func PostConnection(c *gin.Context, db *sql.DB) {
+	var newConnection model.Connection
+
+	if err := c.BindJSON(&newConnection); err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		fmt.Println("Error: ", err)
+		return
+	}
+
+	newConnection.ID = uuid.NewString()
+
+	model.SetConnections(newConnection, db)
+	c.IndentedJSON(http.StatusCreated, newConnection)
 }

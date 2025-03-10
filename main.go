@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	service "github.com/KentDavidButler/JobTracker/src/Service"
+	service "github.com/KentDavidButler/JobTracker/src/service"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -29,8 +29,15 @@ func main() {
 	router.GET("/jobpostings", service.GetJobPostings(db))
 	router.GET("/jobpostings/:id", service.GetJobPostingsByID(db))
 	router.POST("/jobpostings", service.PostJobPosting(db))
+	// TODO: Make a put endpoint to update a job posting
+
 	// Pull Data from Job Posting URL
 	router.POST("/jobpostings/receiver", service.Receiver())
+
+	// Add Connections/People/Referrers to DB
+	router.GET("/connections", service.GetConnections(db))
+	router.GET("/connections/:id", service.GetConnectionsByID(db))
+	router.POST("/connetions", service.PostConnection(db))
 
 	router.Run("localhost:8080")
 }

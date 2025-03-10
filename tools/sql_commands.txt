@@ -38,6 +38,28 @@ ALTER TABLE job_postings ALTER COLUMN referral_name SET DEFAULT 'not_provided',
     ALTER COLUMN additional_info SET DEFAULT 'not_provided'
 ;
 
+
+CREATE TABLE connections (
+    id varchar(255) NOT NULL UNIQUE,
+    first_name varchar(255) NOT NULL DEFAULT 'not_provided',
+    last_name varchar(255) NOT NULL DEFAULT 'not_provided',
+    companies varchar(255)[] NOT NULL DEFAULT '{not_provided}',
+    phone varchar(255) NOT NULL DEFAULT 'not_provided',
+    email varchar(255) NOT NULL DEFAULT 'not_provided',
+    linked_in_url varchar(255) NOT NULL DEFAULT 'not_provided',
+    PRIMARY KEY (ID)
+);
+
+
+CREATE TABLE company (
+    id varchar(255) NOT NULL UNIQUE,
+    name varchar(255) NOT NULL DEFAULT 'not_provided',
+    phone varchar(255) NOT NULL DEFAULT 'not_provided',
+    connections varchar(255)[] NOT NULL DEFAULT '{not_provided}',
+    linked_in_url varchar(255) NOT NULL DEFAULT 'not_provided',
+    PRIMARY KEY (ID)
+);
+
 Test data 
 INSERT INTO job_postings (id,
     company_name, position_link) 
